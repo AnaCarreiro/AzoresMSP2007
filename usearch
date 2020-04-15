@@ -1,0 +1,57 @@
+#!/bin/bash
+
+###Script for OTUs clustering###
+
+#software used: Usearch
+
+####################################################################################################################################################################################
+
+###Start of commands###
+
+####################################################################################################################################################################################
+
+
+###Uniques###
+$echo "Identifying Uniques"
+
+$usearch -fastx_uniques merged12S.fas -fastaout uniques12S.fasta -relabel Uniq -sizeout
+
+$usearch -fastx_uniques merged18S.fas -fastaout uniques18S.fasta -relabel Uniq -sizeout
+
+$usearch -fastx_uniques merged28S.fas -fastaout uniques28S.fasta -relabel Uniq -sizeout
+
+##OTU's##
+$echo "Clustering OTUs"
+
+#For 12S and 28S is a 97% clustering - UPARSE algorithm
+
+$echo "12S"
+
+$usearch -cluster_otus uniques12S.fasta -minsize 2 -otus otus12S.fasta -relabel Otu
+
+$usearch -usearch_global merged12S.fas -db otus12S.fasta -strand plus -id 0.97 -otutabout otutable12S.txt
+
+$echo "28S"
+
+$usearch -cluster_otus uniques28S.fasta -minsize 2 -otus otus28S.fasta -relabel Otu
+
+$usearch -usearch_global merged28S.fas -db otus28S.fasta -strand plus -id 0.97 -otutabout otutable28S.txt
+
+
+#For 18S is a 99% clustering - UNOISE algorithm
+
+
+
+$echo "18S"
+
+$usearch -unoise3 uniques18S.fasta -zotus zotus100_18S.fasta -minsize 4
+
+$usearch -sortbylength zotus100_18S.fasta -fastaout zotus1002_18S.fasta
+
+$usearch -cluster_smallmem zotus1002_18S.fasta -id 0.99 -relabel Otu -centroids otus99_18S.fasta 
+
+$usearch -usearch_global merged18S.fas -db otus99_18S.fasta -strand plus -id 0.97 -otutabout otutable18S.txt
+
+
+
+$echo "finished"
