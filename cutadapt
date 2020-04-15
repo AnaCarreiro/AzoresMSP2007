@@ -1,0 +1,48 @@
+#!/bin/bash
+
+###Script to prepare reads###
+
+#software used: cutadapt
+
+####################################################################################################################################################################################
+
+###Start of commands###
+
+####################################################################################################################################################################################
+
+
+$echo "Demultiplexing by Forward"
+
+$echo "12S"
+$~/.local/bin/cutadapt -g ^AGACGCACTCCGGTAAAACTCGTGCC -o FishF3.fasta ./original/12SFishF3.fasta -e 0.1 --length-tag "length="
+$~/.local/bin/cutadapt -g ^AGCACTGTAGCGGTAAAACTCGTGCC -o FishF4.fasta ./original/12SFishF4.fasta -e 0.1 --length-tag "length="
+
+$echo "18S"
+$~/.local/bin/cutadapt -g ^AGACGCACTCAGAGGTGAAATTSTTGGAYCG -o 18S_F3.fasta ./original/Bliss18S_F3.fasta -e 0.1 --length-tag "length="
+$~/.local/bin/cutadapt -g ^AGCACTGTAGAGAGGTGAAATTSTTGGAYCG -o 18S_F4.fasta ./original/Bliss18S_F4.fasta -e 0.1 --length-tag "length="
+
+$echo "28S"
+$~/.local/bin/cutadapt -g ^AGACGCACTCCGCCGAATCCCGTCGCMAGTAAAMGGCTTC -o SquidF1.fasta ./original/Squid28S_F1.fasta -e 0.1 --length-tag "length="
+$~/.local/bin/cutadapt -g ^AGCACTGTAGCGCCGAATCCCGTCGCMAGTAAAMGGCTTC -o SquidF2.fasta ./original/Squid28S_F2.fasta -e 0.1 --length-tag "length="
+
+
+###Demultiplex by Reverse###
+
+$echo "Demultiplexing by Reverse primer and Filtering"
+
+$echo "12S"
+$~/.local/bin/cutadapt -a file:Reverse_Fish.fas -o ../out/FishF3{name}.fasta FishF3.fasta -e 0.1 -x FishF3{name}. --minimum-length 260 --maximum-length 280
+$~/.local/bin/cutadapt -a file:Reverse_Fish.fas -o ../out/FishF4{name}.fasta FishF4.fasta -e 0.1 -x FishF4{name}. --minimum-length 260 --maximum-length 280
+
+$echo "18S"
+$
+
+~/.local/bin/cutadapt -a file:Reverse_18S.fas -o ../out/18SF3{name}.fasta 18S_F3.fasta -e 0.1 -x 18SF3{name}. --minimum-length 180 --maximum-length 212
+$~/.local/bin/cutadapt -a file:Reverse_18S.fas -o ../out/18SF4{name}.fasta 18S_F4.fasta -e 0.1 -x 18SF4{name}. --minimum-length 180 --maximum-length 212
+
+$echo "28S"
+$~/.local/bin/cutadapt -a file:Reverse_Squid.fas -o ../out/SquidF1{name}.fasta SquidF1.fasta -e 0.1 -x SquidF1{name}. --minimum-length 105 --maximum-length 135 
+$~/.local/bin/cutadapt -a file:Reverse_Squid.fas -o ../out/SquidF2{name}.fasta SquidF2.fasta -e 0.1 -x SquidF2{name}. --minimum-length 105 --maximum-length 135
+
+
+$echo "Finished"
